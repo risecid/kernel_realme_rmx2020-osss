@@ -4268,20 +4268,18 @@ nopage:
 	}
 fail:
 got_pg:
-<<<<<<< HEAD
+         if (woke_kswapd)
+               atomic_dec(&pgdat->kswapd_waiters);
+         if (!page)
+		warn_alloc(gfp_mask, ac->nodemask,
+				"page allocation failure: order:%u", order);
+	return page;
+}
+
 #if defined(VENDOR_EDIT) && defined(CONFIG_OPPO_MEM_MONITOR)
 /* Huacai.Zhou@PSW.BSP.Kernel.MM, 2018-07-07, add alloc wait monitor support*/
 	memory_alloc_monitor(gfp_mask, order, jiffies_to_msecs(jiffies - oppo_alloc_start));
 #endif /*VENDOR_EDIT*/
-=======
-	if (woke_kswapd)
-		atomic_dec(&pgdat->kswapd_waiters);
-	if (!page)
-		warn_alloc(gfp_mask, ac->nodemask,
-				"page allocation failure: order:%u", order);
->>>>>>> b8a44374f8dd... mm: Stop kswapd early when nothing's waiting for it to free pages
-	return page;
-}
 
 static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
 		int preferred_nid, nodemask_t *nodemask,
