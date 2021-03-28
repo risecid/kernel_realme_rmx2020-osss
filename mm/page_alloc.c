@@ -4027,7 +4027,7 @@ __alloc_pages_slowpath(gfp_t gfp_mask, unsigned int order,
 	int compaction_retries;
 	int no_progress_loops;
 	unsigned int cpuset_mems_cookie;
-	int reserve_flags;p
+	int reserve_flags;
         bool woke_kswapd = false;
 
 #if defined(VENDOR_EDIT) && defined(CONFIG_OPPO_MEM_MONITOR)
@@ -4269,6 +4269,10 @@ nopage:
 	}
 fail:
 got_pg:
+#if defined(VENDOR_EDIT) && defined(CONFIG_OPPO_MEM_MONITOR)
+/* Huacai.Zhou@PSW.BSP.Kernel.MM, 2018-07-07, add alloc wait monitor support*/
+        memory_alloc_monitor(gfp_mask, order, jiffies_to_msecs(jiffies - oppo_alloc_start));
+#endif /*VENDOR_EDIT*/
 	if (woke_kswapd)
 		atomic_long_dec(&kswapd_waiters);
 	if (!page)
@@ -4276,11 +4280,6 @@ got_pg:
 				"page allocation failure: order:%u", order);
 	return page;
 }
-
-#if defined(VENDOR_EDIT) && defined(CONFIG_OPPO_MEM_MONITOR)
-/* Huacai.Zhou@PSW.BSP.Kernel.MM, 2018-07-07, add alloc wait monitor support*/
-	memory_alloc_monitor(gfp_mask, order, jiffies_to_msecs(jiffies - oppo_alloc_start));
-#endif /*VENDOR_EDIT*/
 
 static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
 		int preferred_nid, nodemask_t *nodemask,
